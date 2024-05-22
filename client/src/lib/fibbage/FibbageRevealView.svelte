@@ -21,20 +21,24 @@
   <ul>
     {#each Object.entries(lies) as [lieAuthor, text]}
       <li>
-        {text} - votes: {Object.values(state.votes)
-          .filter((a) => a === lieAuthor)
+        {text}, votes: {Object.entries(state.votes)
+          .filter(([name, choice]) => choice === lieAuthor)
+          .map(([name, choice]) => name)
           .join(", ")}
+        , by: {lieAuthor}
       </li>
     {/each}
     <li>
-      {answer} was the truth - votes: ({Object.values(state.votes[victim]).join(
-        ", "
-      )})
+      {answer} was the truth - votes: {Object.entries(state.votes)
+        .filter(([name, choice]) => choice === victim)
+        .map(([name, choice]) => name)
+        .join(", ")}
     </li>
   </ul>
   <p>
-    {Object.keys(state.submissions).length} / {Object.keys(state.players)
-      .length}
+    {Object.values(state.submissions).filter((s) => s === "true").length} / {Object.keys(
+      state.players
+    ).length}
   </p>
   <ReadyPrompt
     label="Ready to continue?"

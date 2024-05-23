@@ -4,7 +4,11 @@ import { createServer } from "http";
 const server = createServer();
 
 /**
- * @type {import('socket.io').Server<import("shared/socket").ClientToServerEvents, import("shared/socket").ServerToClientEvents, import("shared/socket").InterServerEvents, import("shared/socket").SocketData>}
+ * @typedef {import('socket.io').Socket<import("shared/socket").ClientToServerEvents, import("shared/socket").ServerToClientEvents, import("shared/socket").InterServerEvents, import("shared/socket").SocketData>} Socket
+ */
+
+/**
+ * @type {Server<import("shared/socket").ClientToServerEvents, import("shared/socket").ServerToClientEvents, import("shared/socket").InterServerEvents, import("shared/socket").SocketData>}
  */
 const io = new Server(server, { cors: { origin: "*" } });
 
@@ -33,10 +37,17 @@ io.use((socket, next) => {
 
 io.on("connection", (socket) => {
   onConnect(socket);
-  socket.on("submit", onSubmit);
+  socket.on("submit", (submission) => onSubmit(socket, submission));
 });
 
-function onSubmit(socket, submission) {
+/**
+ * Handles client submitted text via the submit event
+ *
+ * @param {Socket} socket
+ * @param {string} text
+ * @returns
+ */
+function onSubmit(socket, text) {
   // ignore submissions from spectators
   if (socket.data.type !== "player") {
     return;
@@ -44,7 +55,7 @@ function onSubmit(socket, submission) {
 
   switch (state.type) {
     case "lobby": {
-      state.submissions[socket.data.name] = submission;
+      state.submissions[socket.data.name] = text;
 
       if (
         Object.keys(state.submissions).length ===
@@ -61,7 +72,7 @@ function onSubmit(socket, submission) {
       break;
     }
     case "ask": {
-      state.submissions[socket.data.name] = submission;
+      state.submissions[socket.data.name] = text;
 
       if (
         Object.keys(state.submissions).length ===
@@ -78,7 +89,7 @@ function onSubmit(socket, submission) {
       break;
     }
     case "answer": {
-      state.submissions[socket.data.name] = submission;
+      state.submissions[socket.data.name] = text;
 
       if (
         Object.keys(state.submissions).length ===
@@ -99,7 +110,7 @@ function onSubmit(socket, submission) {
       break;
     }
     case "fibbage.lie": {
-      state.submissions[socket.data.name] = submission;
+      state.submissions[socket.data.name] = text;
 
       if (
         Object.keys(state.submissions).length ===
@@ -121,7 +132,7 @@ function onSubmit(socket, submission) {
       break;
     }
     case "fibbage.vote": {
-      state.submissions[socket.data.name] = submission;
+      state.submissions[socket.data.name] = text;
 
       if (
         Object.keys(state.submissions).length ===
@@ -144,7 +155,7 @@ function onSubmit(socket, submission) {
       break;
     }
     case "fibbage.reveal": {
-      state.submissions[socket.data.name] = submission;
+      state.submissions[socket.data.name] = text;
 
       if (
         Object.keys(state.submissions).length ===
@@ -186,6 +197,11 @@ function onSubmit(socket, submission) {
   sync();
 }
 
+/**
+ * Handles new socket connections
+ *
+ * @param {Socket} socket
+ */
 function onConnect(socket) {
   if (socket.data.type !== "player") {
     return;

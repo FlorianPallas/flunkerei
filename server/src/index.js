@@ -199,8 +199,8 @@ function sync() {
   io.emit("state", state);
 }
 
-server.listen(3000, "192.168.92.173", () => {
-  console.log("server running at http://localhost:3000");
+server.listen(3000, () => {
+  console.log("server listening on port 3000");
 });
 
 /**

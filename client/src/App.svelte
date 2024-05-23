@@ -5,7 +5,7 @@
 
   /** @type {import('shared/fibbage').FibbageState | undefined} */
   let state = undefined;
-  let socket = io("http://192.168.92.173:3000/", { autoConnect: false });
+  let socket = io("http://localhost:3000/", { autoConnect: false });
 
   onDestroy(() => {
     socket.off("connect_error");

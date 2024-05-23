@@ -32,169 +32,180 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("got connection from", socket.data);
+  onConnect(socket);
+  socket.on("submit", onSubmit);
+});
 
+function onSubmit(socket, submission) {
+  // ignore submissions from spectators
   if (socket.data.type !== "player") {
     return;
   }
 
-  // if the player is not in the game, add them
-  if (state.players[socket.data.name] === undefined) {
+  switch (state.type) {
+    case "lobby": {
+      state.submissions[socket.data.name] = submission;
+
+      if (
+        Object.keys(state.submissions).length ===
+        Object.keys(state.players).length
+      ) {
+        state = {
+          type: "ask",
+          players: state.players,
+          submissions: {}, // reset submissions
+        };
+      }
+
+      break;
+    }
+    case "ask": {
+      state.submissions[socket.data.name] = submission;
+
+      if (
+        Object.keys(state.submissions).length ===
+        Object.keys(state.players).length
+      ) {
+        state = {
+          type: "answer",
+          players: state.players,
+          questions: state.submissions,
+          mappings: generateQuestionMappings(state.submissions),
+          submissions: {}, // reset submissions
+        };
+      }
+      break;
+    }
+    case "answer": {
+      state.submissions[socket.data.name] = submission;
+
+      if (
+        Object.keys(state.submissions).length ===
+        Object.keys(state.players).length
+      ) {
+        state = {
+          type: "fibbage.lie",
+          round: 0,
+
+          players: state.players,
+          questions: state.questions,
+          mappings: state.mappings,
+          answers: state.submissions,
+
+          submissions: {}, // reset submissions
+        };
+      }
+      break;
+    }
+    case "fibbage.lie": {
+      state.submissions[socket.data.name] = submission;
+
+      if (
+        Object.keys(state.submissions).length ===
+        Object.keys(state.players).length - 1 // one less because the victim can't submit a lie
+      ) {
+        state = {
+          type: "fibbage.vote",
+          round: state.round,
+
+          players: state.players,
+          questions: state.questions,
+          mappings: state.mappings,
+          answers: state.answers,
+          lies: state.submissions,
+
+          submissions: {}, // reset submissions
+        };
+      }
+      break;
+    }
+    case "fibbage.vote": {
+      state.submissions[socket.data.name] = submission;
+
+      if (
+        Object.keys(state.submissions).length ===
+        Object.keys(state.players).length - 1 // one less because the victim can't cast a vote
+      ) {
+        state = {
+          type: "fibbage.reveal",
+          round: state.round,
+
+          players: state.players,
+          questions: state.questions,
+          mappings: state.mappings,
+          answers: state.answers,
+          lies: state.lies,
+          votes: state.submissions,
+
+          submissions: {}, // reset submissions
+        };
+      }
+      break;
+    }
+    case "fibbage.reveal": {
+      state.submissions[socket.data.name] = submission;
+
+      if (
+        Object.keys(state.submissions).length ===
+        Object.keys(state.players).length
+      ) {
+        state.round++;
+
+        // end of the game
+        if (state.round === Object.keys(state.players).length) {
+          state = {
+            type: "lobby",
+            players: state.players,
+            submissions: {},
+          };
+          break;
+        }
+
+        state = {
+          type: "fibbage.lie",
+          round: state.round,
+
+          players: state.players,
+          questions: state.questions,
+          mappings: state.mappings,
+          answers: state.answers,
+
+          submissions: {}, // reset submissions
+        };
+      }
+
+      break;
+    }
+    default:
+      break;
+  }
+
+  console.log("Flushing new state to players", state);
+
+  sync();
+}
+
+function onConnect(socket) {
+  if (socket.data.type !== "player") {
+    return;
+  }
+
+  const isNewPlayer = state.players[socket.data.name] === undefined;
+  const isOngoingGame = state.type !== "lobby";
+
+  // only allow established players to join mid-game (reconnects)
+  if ((isNewPlayer && !isOngoingGame) || !isNewPlayer) {
     state.players[socket.data.name] = 0;
   }
 
+  // make sure the new client gets the current state
   sync();
+}
 
-  socket.on("submit", (submission) => {
-    // ignore submissions from spectators
-    if (socket.data.type !== "player") {
-      return;
-    }
-
-    switch (state.type) {
-      case "lobby": {
-        state.submissions[socket.data.name] = submission;
-
-        if (
-          Object.keys(state.submissions).length ===
-          Object.keys(state.players).length
-        ) {
-          state = {
-            type: "ask",
-            players: state.players,
-            submissions: {}, // reset submissions
-          };
-        }
-
-        break;
-      }
-      case "ask": {
-        state.submissions[socket.data.name] = submission;
-
-        if (
-          Object.keys(state.submissions).length ===
-          Object.keys(state.players).length
-        ) {
-          state = {
-            type: "answer",
-            players: state.players,
-            questions: state.submissions,
-            mappings: generateQuestionMappings(state.submissions),
-            submissions: {}, // reset submissions
-          };
-        }
-        break;
-      }
-      case "answer": {
-        state.submissions[socket.data.name] = submission;
-
-        if (
-          Object.keys(state.submissions).length ===
-          Object.keys(state.players).length
-        ) {
-          state = {
-            type: "fibbage.lie",
-            round: 0,
-
-            players: state.players,
-            questions: state.questions,
-            mappings: state.mappings,
-            answers: state.submissions,
-
-            submissions: {}, // reset submissions
-          };
-        }
-        break;
-      }
-      case "fibbage.lie": {
-        state.submissions[socket.data.name] = submission;
-
-        if (
-          Object.keys(state.submissions).length ===
-          Object.keys(state.players).length - 1 // one less because the victim can't submit a lie
-        ) {
-          state = {
-            type: "fibbage.vote",
-            round: state.round,
-
-            players: state.players,
-            questions: state.questions,
-            mappings: state.mappings,
-            answers: state.answers,
-            lies: state.submissions,
-
-            submissions: {}, // reset submissions
-          };
-        }
-        break;
-      }
-      case "fibbage.vote": {
-        state.submissions[socket.data.name] = submission;
-
-        if (
-          Object.keys(state.submissions).length ===
-          Object.keys(state.players).length - 1 // one less because the victim can't cast a vote
-        ) {
-          state = {
-            type: "fibbage.reveal",
-            round: state.round,
-
-            players: state.players,
-            questions: state.questions,
-            mappings: state.mappings,
-            answers: state.answers,
-            lies: state.lies,
-            votes: state.submissions,
-
-            submissions: {}, // reset submissions
-          };
-        }
-        break;
-      }
-      case "fibbage.reveal": {
-        state.submissions[socket.data.name] = submission;
-
-        if (
-          Object.keys(state.submissions).length ===
-          Object.keys(state.players).length
-        ) {
-          state.round++;
-
-          // end of the game
-          if (state.round === Object.keys(state.players).length) {
-            state = {
-              type: "lobby",
-              players: state.players,
-              submissions: {},
-            };
-            break;
-          }
-
-          state = {
-            type: "fibbage.lie",
-            round: state.round,
-
-            players: state.players,
-            questions: state.questions,
-            mappings: state.mappings,
-            answers: state.answers,
-
-            submissions: {}, // reset submissions
-          };
-        }
-
-        break;
-      }
-      default:
-        break;
-    }
-
-    console.log("Flushing new state to players", state);
-
-    sync();
-  });
-});
-
+/**
+ * Broadcasts the current state to all connected
+ * clients playing or spectating.
+ */
 function sync() {
   io.emit("state", state);
 }
@@ -220,6 +231,8 @@ function getRandomInt(min, max) {
 }
 
 /**
+ * Assigns questions to players at random, making
+ * sure each player does not get their own question
  *
  * @param {Record<string,string>} questions
  * @returns

@@ -210,9 +210,14 @@ function onConnect(socket) {
   const isNewPlayer = state.players[socket.data.name] === undefined;
   const isOngoingGame = state.type !== "lobby";
 
-  // only allow established players to join mid-game (reconnects)
-  if ((isNewPlayer && !isOngoingGame) || !isNewPlayer) {
-    state.players[socket.data.name] = 0;
+  if (isNewPlayer) {
+    if (isOngoingGame) {
+      // new players may only join in the lobby
+      socket.disconnect();
+      return;
+    } else {
+      state.players[socket.data.name] = 0;
+    }
   }
 
   // make sure the new client gets the current state

@@ -48,7 +48,8 @@ function onSubmit(socket, submission) {
 
       if (
         Object.keys(state.submissions).length ===
-        Object.keys(state.players).length
+          Object.keys(state.players).length &&
+        Object.keys(state.players).length > 1
       ) {
         state = {
           type: "ask",

@@ -1,4 +1,5 @@
 <script>
+  import { getRandomQuestion } from "../../questions";
   import TextPrompt from "../prompts/TextPrompt.svelte";
 
   /** @type {import('socket.io-client').Socket} */
@@ -22,5 +23,8 @@
       label="Think of a question"
       on:submit={(event) => socket.emit("submit", event.detail)}
     />
+    <button on:click={() => socket.emit("submit", getRandomQuestion())}>
+      Pick for me
+    </button>
   {/if}
 </div>

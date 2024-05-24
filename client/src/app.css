@@ -24,6 +24,24 @@ h6 {
   padding: 0;
 }
 
+.vote-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vote-box p {
+  margin-bottom: 10px;
+}
+
+.vote-box button + button {
+  margin-top: 10px;
+}
+
+.vote-box button {
+  padding: 5px;
+}
+
 ul {
   list-style: none;
 }

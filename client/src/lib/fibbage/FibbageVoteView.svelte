@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import SelectPrompt from "../prompts/SelectPrompt.svelte";
 
   /** @type {import('socket.io-client').Socket} */
@@ -24,14 +25,22 @@
   $: lies = state.lies;
 
   $: submission = state.submissions[socket.auth.name];
-  $: options = Object.fromEntries(
-    shuffleArray([
-      ...Object.entries(lies).filter(
-        (author, _) => author !== socket.auth.name
-      ),
-      [victim, answer],
-    ])
-  );
+
+  /**
+   * @type {Record<string, string>}
+   */
+  let options = {};
+
+  onMount(() => {
+    options = Object.fromEntries(
+      shuffleArray([
+        ...Object.entries(lies).filter(
+          (author, _) => author !== socket.auth.name
+        ),
+        [victim, answer],
+      ])
+    );
+  });
 </script>
 
 <div>

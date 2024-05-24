@@ -13,7 +13,7 @@
 <div>
   <ul>
     {#each Object.entries(state.players) as [name, score]}
-      <li>{name} - {score}</li>
+      <li>{name}</li>
     {/each}
   </ul>
   <p>

@@ -17,7 +17,7 @@
 </script>
 
 <div>
-  <p>{victim} was asked {question} by {author}</p>
+  <p>{victim} was asked {question}</p>
   <ul>
     {#each Object.entries(lies) as [lieAuthor, text]}
       <li>

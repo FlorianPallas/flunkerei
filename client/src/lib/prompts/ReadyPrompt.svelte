@@ -5,8 +5,8 @@
   /** @type {string} */
   export let value;
 
-  /** @type {string} */
-  export let label;
+  /** @type {import('shared/fibbage').FibbageState} */
+  export let state;
 </script>
 
 <form
@@ -15,12 +15,13 @@
     dispatch("submit", value === "true" ? "false" : "true");
   }}
 >
-  <label for="answer">{label}</label>
   <button type="submit">
     {#if value === "true"}
-      Not Ready
+      Nicht Bereit
     {:else}
-      Ready
+      Bereit
     {/if}
+    ({Object.values(state.submissions).filter((s) => s === "true")
+      .length}/{Object.keys(state.players).length})
   </button>
 </form>

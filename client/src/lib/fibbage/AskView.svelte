@@ -1,6 +1,7 @@
 <script>
-  import { getRandomQuestion } from "../../questions";
+  import { content } from "../../stores";
   import TextPrompt from "../prompts/TextPrompt.svelte";
+  import { getRandomElement } from "../util";
 
   /** @type {import('socket.io-client').Socket} */
   export let socket;
@@ -8,23 +9,39 @@
   /** @type {import('shared/fibbage').AskPhase} */
   export let state;
 
-  $: question = state.submissions[socket.auth.name];
+  $: submission = state.submissions[socket.auth.name];
+
+  let usedQuestionPool = false;
+
+  function onPickForMe() {
+    if (
+      !confirm(
+        "Möchtest du wirklich eine vorgeschriebene Frage benutzen, anstatt eine eigene zu schreiben? Das ist ein bisschen langweilig, findest du nicht?"
+      )
+    ) {
+      return;
+    }
+    usedQuestionPool = true;
+    socket.emit("submit", getRandomElement($content.questions));
+  }
+
+  /**
+   * @param event {CustomEvent<string>}
+   */
+  function onSubmit(event) {
+    socket.emit("submit", event.detail);
+  }
 </script>
 
-<div>
-  <p>
-    {Object.keys(state.submissions).length} / {Object.keys(state.players)
-      .length}
-  </p>
-  {#if question}
-    <p>Waiting for others...</p>
-  {:else}
-    <TextPrompt
-      label="Think of a question"
-      on:submit={(event) => socket.emit("submit", event.detail)}
-    />
-    <button on:click={() => socket.emit("submit", getRandomQuestion())}>
-      Pick for me
-    </button>
-  {/if}
-</div>
+<main>
+  <TextPrompt
+    label="Denke dir eine Frage für die anderen Spieler aus"
+    value={submission}
+    on:submit={onSubmit}
+  />
+</main>
+<footer>
+  <button disabled={usedQuestionPool} on:click={() => onPickForMe()}
+    >Mir fällt nichts ein</button
+  >
+</footer>

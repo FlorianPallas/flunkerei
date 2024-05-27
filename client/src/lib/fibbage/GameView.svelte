@@ -13,20 +13,18 @@
   export let state;
 </script>
 
-<div>
-  {#if state.type === "lobby"}
-    <LobbyView {socket} {state} />
-  {:else if state.type === "ask"}
-    <AskView {socket} {state} />
-  {:else if state.type === "answer"}
-    <AnswerView {socket} {state} />
-  {:else if state.type === "fibbage.lie"}
-    <FibbageLieView {socket} {state} />
-  {:else if state.type === "fibbage.vote"}
-    <FibbageVoteView {socket} {state} />
-  {:else if state.type === "fibbage.reveal"}
-    <FibbageRevealView {socket} {state} />
-  {:else}
-    <p>Unknown state type</p>
-  {/if}
-</div>
+{#if state.type === "lobby"}
+  <LobbyView {socket} {state} />
+{:else if state.type === "ask"}
+  <AskView {socket} {state} />
+{:else if state.type === "answer"}
+  <AnswerView {socket} {state} />
+{:else if state.type === "fibbage.lie"}
+  <FibbageLieView {socket} {state} />
+{:else if state.type === "fibbage.vote"}
+  <FibbageVoteView {socket} {state} />
+{:else if state.type === "fibbage.reveal"}
+  <FibbageRevealView {socket} {state} />
+{:else}
+  <p>Unknown state type</p>
+{/if}

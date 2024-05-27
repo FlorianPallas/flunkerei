@@ -1,5 +1,7 @@
 <script>
   import TextPrompt from "../prompts/TextPrompt.svelte";
+  import Notice from "../common/Notice.svelte";
+  import WasAsked from "../common/WasAsked.svelte";
 
   /** @type {import('socket.io-client').Socket} */
   export let socket;
@@ -14,22 +16,19 @@
   $: submission = state.submissions[socket.auth.name];
 </script>
 
-<div>
-  <p>
-    {Object.keys(state.submissions).length} / {Object.keys(state.players)
-      .length - 1}
-  </p>
-  {#if submission}
-    <p>Waiting for others...</p>
+<main>
+  <div class="card">
+    <p><WasAsked {victim} {question} /></p>
+  </div>
+  {#if victim !== socket.auth.name}
+    <TextPrompt
+      label="Denke dir eine Lüge aus die glaubwürdig klingt"
+      value={submission}
+      on:submit={(event) => socket.emit("submit", event.detail)}
+    />
   {:else}
-    <p>{victim} was asked {question}</p>
-    {#if victim === socket.auth.name}
-      <p>You cannot lie for your own answer</p>
-    {:else}
-      <TextPrompt
-        label="Think of a fitting lie"
-        on:submit={(event) => socket.emit("submit", event.detail)}
-      />
-    {/if}
+    <Notice
+      text="Du bist das Opfer dieser Runde, du musst dir keine Lüge ausdenken!"
+    />
   {/if}
-</div>
+</main>

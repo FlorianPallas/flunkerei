@@ -1,22 +1,15 @@
 <script>
   import { onMount } from "svelte";
   import SelectPrompt from "../prompts/SelectPrompt.svelte";
+  import Notice from "../common/Notice.svelte";
+  import WasAsked from "../common/WasAsked.svelte";
+  import { shuffleArray } from "../util";
 
   /** @type {import('socket.io-client').Socket} */
   export let socket;
 
   /** @type {import('shared/fibbage').FibbageVotePhase} */
   export let state;
-
-  function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      // Pick a random index from 0 to i
-      const j = Math.floor(Math.random() * (i + 1));
-      // Swap elements array[i] and array[j]
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
 
   $: author = Object.keys(state.players)[state.round];
   $: victim = state.mappings[author];
@@ -35,7 +28,7 @@
     options = Object.fromEntries(
       shuffleArray([
         ...Object.entries(lies).filter(
-          (author, _) => author !== socket.auth.name
+          ([author, _]) => author !== socket.auth.name
         ),
         [victim, answer],
       ])
@@ -43,28 +36,21 @@
   });
 </script>
 
-<div>
-  <p>
-    {Object.keys(state.submissions).length} / {Object.keys(state.players)
-      .length - 1}
-  </p>
-  {#if submission}
-    <p>Waiting for others...</p>
-  {:else}
-    <p>{victim} was asked {question}</p>
-    {#if victim === socket.auth.name}
-      <p>You cannot vote for your own answer</p>
-      <ul>
-        {#each Object.values(lies) as text}
-          <li>{text}</li>
-        {/each}
-      </ul>
-    {:else}
-      <SelectPrompt
-        text="Pick what you think is the truth"
-        {options}
-        on:submit={(event) => socket.emit("submit", event.detail)}
-      />
-    {/if}
+<main>
+  <div class="card">
+    <p><WasAsked {victim} {question} /></p>
+  </div>
+  {#if victim === socket.auth.name}
+    <Notice
+      text="Du hast die Wahrheit geschrieben, du darfst nicht mit abstimmen!"
+    />
   {/if}
-</div>
+  <div class="answers-list">
+    <SelectPrompt
+      {options}
+      value={submission}
+      on:submit={(event) => socket.emit("submit", event.detail)}
+      disabled={victim === socket.auth.name}
+    />
+  </div>
+</main>

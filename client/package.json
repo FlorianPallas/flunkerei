@@ -1,7 +1,6 @@
 {
   "name": "client",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,8 +15,10 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "normalize.css": "^8.0.1",
     "shared": "workspace:*",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "svelte-fa": "^4.0.2"
   }
 }

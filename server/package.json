@@ -8,9 +8,6 @@
     "start": "node .",
     "dev": "nodemon ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "shared": "workspace:*",
     "socket.io": "^4.7.5"

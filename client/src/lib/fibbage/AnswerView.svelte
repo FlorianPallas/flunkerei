@@ -1,4 +1,5 @@
 <script>
+  import Question from "../common/Question.svelte";
   import TextPrompt from "../prompts/TextPrompt.svelte";
 
   /** @type {import('socket.io-client').Socket} */
@@ -11,18 +12,13 @@
   $: submission = state.submissions[socket.auth.name];
 </script>
 
-<div>
-  <p>
-    {Object.keys(state.submissions).length} / {Object.keys(state.players)
-      .length}
-  </p>
-  {#if submission}
-    <p>Waiting for others...</p>
-  {:else}
-    <p>{question}</p>
-    <TextPrompt
-      label="Answer the question honestly"
-      on:submit={(event) => socket.emit("submit", event.detail)}
-    />
-  {/if}
-</div>
+<main>
+  <div class="card">
+    <p><Question text={question} /></p>
+  </div>
+  <TextPrompt
+    label="Beantworte die Frage wahrheitsgemäß"
+    value={submission}
+    on:submit={(event) => socket.emit("submit", event.detail)}
+  />
+</main>

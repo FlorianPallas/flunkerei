@@ -1,5 +1,7 @@
 <script>
+  import Player from "../common/Player.svelte";
   import ReadyPrompt from "../prompts/ReadyPrompt.svelte";
+  import { appVersion } from "../util";
 
   /** @type {import('socket.io-client').Socket} */
   export let socket;
@@ -10,20 +12,41 @@
   $: submission = state.submissions[socket.auth.name];
 </script>
 
-<div>
-  <ul>
+<header class="logo">
+  <h1>Flunkerei</h1>
+  <code>v{appVersion}</code>
+</header>
+<main>
+  <ul class="player-list">
     {#each Object.entries(state.players) as [name, score]}
-      <li>{name}</li>
+      <li><Player {name} /></li>
     {/each}
   </ul>
-  <p>
-    {Object.values(state.submissions).filter((s) => s === "true").length} / {Object.keys(
-      state.players
-    ).length}
-  </p>
+</main>
+<footer>
   <ReadyPrompt
-    label="Are you ready to start?"
     value={submission}
+    {state}
     on:submit={(e) => socket.emit("submit", e.detail)}
   />
-</div>
+</footer>
+
+<style>
+  .logo {
+    display: flex;
+    align-items: baseline;
+
+    & code {
+      font-size: 0.8em;
+      margin-left: 0.5em;
+    }
+  }
+
+  .player-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0 auto;
+    align-items: center;
+  }
+</style>

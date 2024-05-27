@@ -1,27 +1,84 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: bold;
-  color: #fff;
-}
-
-ul,
-li,
-label,
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #fff;
-}
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Playpen+Sans:wght@100..800&display=swap");
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: "Playpen Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1.5;
+
+  color: #fff;
+}
+
+html,
+body {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(28, 97, 176),
+    rgb(151, 26, 88)
+  );
+}
+
+html,
+body,
+#app {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+#app {
+  background-image: url("assets/noise-light.png");
+  background-repeat: repeat;
+  background-size: 110px;
+
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  padding: 1em;
+  border-radius: 0.25em;
+  margin-bottom: 1em;
+  background-color: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.card--notice {
+  display: flex;
+  align-items: center;
+  padding: 0.5em;
+
+  & p {
+    margin-left: 0.5em;
+    font-size: 0.8em;
+  }
+}
+
+main {
+  width: 100%;
+  padding: 1em;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+footer {
+  width: 100%;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .vote-box {
@@ -46,68 +103,77 @@ ul {
   list-style: none;
 }
 
-p {
-  font-size: 25px;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-  background-image: linear-gradient(to bottom right, blue, purple);
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-.card {
-  padding: 2em;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-label {
-  margin-right: 10px;
-  font-size: 20px;
-  text-transform: uppercase;
-}
-
 input {
-  background-color: white;
-  border-radius: 3px;
-  border-width: 0;
-  margin: 10px;
-  height: 40px;
-  width: 300px;
-  font-family: Inter;
-  font-size: 20px;
-  color: black;
+  background-color: #fff;
+  color: #000;
+
+  padding: 0.5em 1em;
+  margin: 0;
+  border: none;
+  border-radius: 0.25em;
 }
 
 button {
+  background-color: #000;
   color: #fff;
-  border-radius: 3px;
-  width: 300px;
-  height: 40px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background: #1a1a1a;
+
+  padding: 0.5em 1em;
+  margin: 0;
+  border: none;
+  border-radius: 0.25em;
   cursor: pointer;
-  transition: border-color 0.25s;
-  text-transform: uppercase;
+  border: 2px solid transparent;
+
+  transition: border-color 0.2s;
 }
-button:hover {
-  border-color: #646cff;
+
+.hidden {
+  opacity: 0;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+button.active {
+  border-color: #fff;
+}
+
+.lie-card {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  font-size: 0.8em;
+  width: 100%;
+  margin-bottom: 0.5em;
+
+  & ul {
+    margin-top: 0.5em;
+    display: flex;
+    gap: 0.25em;
+    transition: opacity 0.2s;
+  }
+
+  & ul li {
+    background-color: #fff;
+    color: #000;
+    font-size: 0.8em;
+    border-radius: 5em;
+    padding: 0 0.5em;
+  }
+
+  & .lie-card__text {
+    text-transform: uppercase;
+  }
+
+  & .lie-card__author {
+    margin-top: 0.5em;
+    transition: opacity 0.2s;
+  }
+}
+
+.answers-list {
+  flex-grow: 1;
 }

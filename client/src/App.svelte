@@ -1,59 +1,44 @@
 <script>
   import { io } from "socket.io-client";
   import { onDestroy } from "svelte";
-  import FibbageView from "./lib/fibbage/GameView.svelte";
+  import GameView from "./lib/fibbage/GameView.svelte";
+  import TextPrompt from "./lib/prompts/TextPrompt.svelte";
 
   /** @type {import('shared/fibbage').FibbageState | undefined} */
   let state = undefined;
-  let socket = io("http://localhost:3000/", { autoConnect: false });
+  let socket = io(import.meta.env.VITE_API_BASE_URL, { autoConnect: false });
 
   onDestroy(() => {
-    socket.off("connect_error");
-    socket.close();
-  });
-
-  socket.on("connect_error", (err) => {
-    console.log("Connection error", err);
+    socket.disconnect();
   });
 
   socket.on("state", (newState) => {
-    console.log("New state:", newState);
     state = newState;
   });
 
-  /** @param {string} name */
+  /**
+   * @param name {string}
+   */
   const join = (name) => {
     if (socket.connected) {
       return;
     }
-    console.log("Joining as", name);
     socket.auth = { type: "player", name };
     socket.connect();
   };
-
-  /** @type {string} */
-  let name = "";
-
-  /**
-   * A notice to display to the user.
-   * @type {string | undefined}
-   */
-  let notice;
 </script>
 
-<main>
-  {#if socket.connected}
-    {#if state}
-      <FibbageView {socket} {state} />
-    {:else}
-      <p>Syncing...</p>
-    {/if}
+{#if socket.connected}
+  {#if state}
+    <GameView {socket} {state} />
   {:else}
-    {#if notice}
-      <p>{notice}</p>
-    {/if}
-    <p>Please enter you name:</p>
-    <input type="text" bind:value={name} />
-    <button on:click={() => join(name)}> Join </button>
+    <p>Syncing...</p>
   {/if}
-</main>
+{:else}
+  <main>
+    <TextPrompt
+      label="Bitte gib deinen Namen ein"
+      on:submit={(event) => join(event.detail)}
+    />
+  </main>
+{/if}

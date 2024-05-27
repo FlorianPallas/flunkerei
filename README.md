@@ -54,3 +54,4 @@ If you want to play with friends within the same network, you will need to chang
 1. Open the `client/.env` file and change the `VITE_API_BASE_URL` to `http://<your-ip>:3000`
 1. Launch the client with the `--host` flag to allow outside connections
 1. Launch the server as usual
+1. Let your friends connect via `http://<your-ip>:5173`

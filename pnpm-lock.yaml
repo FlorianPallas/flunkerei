@@ -13,6 +13,9 @@ importers:
       '@fortawesome/free-solid-svg-icons':
         specifier: ^6.5.2
         version: 6.5.2
+      '@libs/qrcode':
+        specifier: npm:@jsr/libs__qrcode@^1.2.1
+        version: '@jsr/libs__qrcode@1.2.1'
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -29,9 +32,6 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.2
         version: 3.1.0(svelte@4.2.17)(vite@5.2.11(@types/node@20.12.12))
-      '@types/node':
-        specifier: ^20.12.12
-        version: 20.12.12
       svelte:
         specifier: ^4.2.17
         version: 4.2.17
@@ -226,6 +226,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@jsr/libs__qrcode@1.2.1':
+    resolution: {integrity: sha512-Rl5kpdWgMS2GmRBEK+5KKul5Ku+umxZx9iteYZlhN0KKxPiUaDmX4KRsSQ+D7yDAlz9l/DLb4t1h/uNbSG3T9w==, tarball: https://npm.jsr.io/~/11/@jsr/libs__qrcode/1.2.1.tgz}
 
   '@rollup/rollup-android-arm-eabi@4.17.2':
     resolution: {integrity: sha512-NM0jFxY8bB8QLkoKxIQeObCaDlJKewVlIEkuyYKm5An1tdVZ966w2+MPQ2l8LBZLjR+SgyV+nRkTIunzOYBMLQ==}
@@ -764,6 +767,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
+
+  '@jsr/libs__qrcode@1.2.1': {}
 
   '@rollup/rollup-android-arm-eabi@4.17.2':
     optional: true

@@ -1,285 +1,119 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
+import { getRandomInt } from "shared";
 
 const server = createServer();
 
 /**
- * @typedef {import('socket.io').Socket<import("shared/socket").ClientToServerEvents, import("shared/socket").ServerToClientEvents, import("shared/socket").InterServerEvents, import("shared/socket").SocketData>} Socket
+ * @typedef {import('socket.io').Socket<import("shared/socket").IncomingEvents, import("shared/socket").OutgoingEvents, import("shared/socket").InterServerEvents, import("shared/socket").SocketData>} Socket
  */
 
 /**
- * @type {Server<import("shared/socket").ClientToServerEvents, import("shared/socket").ServerToClientEvents, import("shared/socket").InterServerEvents, import("shared/socket").SocketData>}
+ * @type {Server<import("shared/socket").IncomingEvents, import("shared/socket").OutgoingEvents, import("shared/socket").InterServerEvents, import("shared/socket").SocketData>}
  */
 const io = new Server(server, { cors: { origin: "*" } });
 
-/** @type {import('shared/fibbage').FibbageState} */
-let state = { type: "lobby", players: {}, submissions: {} };
+/**
+ * @typedef {{ host: { name: string; socket: Socket }; clients: Map<string, Socket>; }} Room
+ */
+
+/** @type {Map<string, Room>} */
+const rooms = new Map();
+
+const CODE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const CODE_LENGTH = 4;
 
 io.use((socket, next) => {
   const auth = socket.handshake.auth;
-  switch (auth.type) {
-    case "player":
-      socket.data = {
-        type: "player",
-        name: auth.name,
-      };
-      break;
-    case "spectator":
-      socket.data = {
-        type: "spectator",
-      };
-      break;
-    default:
-      return next(new Error("invalid-type"));
+
+  if (!auth.name) {
+    return next(new Error("Name is required"));
   }
+
+  if (auth.code && !rooms.has(auth.code)) {
+    return next(new Error("Room not found"));
+  }
+
+  socket.data = { name: auth.name, code: auth.code };
+
   next();
 });
 
 io.on("connection", (socket) => {
-  onConnect(socket);
-  socket.on("submit", (submission) => onSubmit(socket, submission));
-});
+  let room = socket.data.code ? rooms.get(socket.data.code) : undefined;
 
-/**
- * Handles client submitted text via the submit event
- *
- * @param {Socket} socket
- * @param {string} text
- * @returns
- */
-function onSubmit(socket, text) {
-  // ignore submissions from spectators
-  if (socket.data.type !== "player") {
-    return;
+  if (!room) {
+    console.log("Creating new room");
+
+    /** @type {Room} */
+    room = {
+      host: { name: socket.data.name, socket },
+      clients: new Map([[socket.data.name, socket]]),
+    };
+
+    /** @type {string} */
+    let code;
+    do {
+      code = "";
+      for (let i = 0; i < CODE_LENGTH; i++) {
+        code += CODE_ALPHABET[getRandomInt(0, CODE_ALPHABET.length - 1)];
+      }
+    } while (rooms.has(code));
+
+    rooms.set(code, room);
+    socket.data.code = code;
+    room.host.socket.emit("hello", code);
+  } else {
+    console.log("Joining existing room");
+    room.clients.set(socket.data.name, socket);
   }
 
-  switch (state.type) {
-    case "lobby": {
-      state.submissions[socket.data.name] = text;
+  // notify server about new client
+  room.host.socket.emit("join", socket.data.name);
 
-      if (
-        Object.keys(state.submissions).length ===
-          Object.keys(state.players).length &&
-        Object.keys(state.players).length > 1
-      ) {
-        state = {
-          type: "ask",
-          players: state.players,
-          submissions: {}, // reset submissions
-        };
-      }
-
-      break;
-    }
-    case "ask": {
-      state.submissions[socket.data.name] = text;
-
-      if (
-        Object.keys(state.submissions).length ===
-        Object.keys(state.players).length
-      ) {
-        state = {
-          type: "answer",
-          players: state.players,
-          questions: state.submissions,
-          mappings: generateQuestionMappings(state.submissions),
-          submissions: {}, // reset submissions
-        };
-      }
-      break;
-    }
-    case "answer": {
-      state.submissions[socket.data.name] = text;
-
-      if (
-        Object.keys(state.submissions).length ===
-        Object.keys(state.players).length
-      ) {
-        state = {
-          type: "fibbage.lie",
-          round: 0,
-
-          players: state.players,
-          questions: state.questions,
-          mappings: state.mappings,
-          answers: state.submissions,
-
-          submissions: {}, // reset submissions
-        };
-      }
-      break;
-    }
-    case "fibbage.lie": {
-      state.submissions[socket.data.name] = text;
-
-      if (
-        Object.keys(state.submissions).length ===
-        Object.keys(state.players).length - 1 // one less because the victim can't submit a lie
-      ) {
-        state = {
-          type: "fibbage.vote",
-          round: state.round,
-
-          players: state.players,
-          questions: state.questions,
-          mappings: state.mappings,
-          answers: state.answers,
-          lies: state.submissions,
-
-          submissions: {}, // reset submissions
-        };
-      }
-      break;
-    }
-    case "fibbage.vote": {
-      state.submissions[socket.data.name] = text;
-
-      if (
-        Object.keys(state.submissions).length ===
-        Object.keys(state.players).length - 1 // one less because the victim can't cast a vote
-      ) {
-        state = {
-          type: "fibbage.reveal",
-          round: state.round,
-
-          players: state.players,
-          questions: state.questions,
-          mappings: state.mappings,
-          answers: state.answers,
-          lies: state.lies,
-          votes: state.submissions,
-
-          submissions: {}, // reset submissions
-        };
-      }
-      break;
-    }
-    case "fibbage.reveal": {
-      state.submissions[socket.data.name] = text;
-
-      if (
-        Object.keys(state.submissions).length ===
-        Object.keys(state.players).length
-      ) {
-        state.round++;
-
-        // end of the game
-        if (state.round === Object.keys(state.players).length) {
-          state = {
-            type: "lobby",
-            players: state.players,
-            submissions: {},
-          };
-          break;
-        }
-
-        state = {
-          type: "fibbage.lie",
-          round: state.round,
-
-          players: state.players,
-          questions: state.questions,
-          mappings: state.mappings,
-          answers: state.answers,
-
-          submissions: {}, // reset submissions
-        };
-      }
-
-      break;
-    }
-    default:
-      break;
-  }
-
-  console.log("Flushing new state to players", state);
-
-  sync();
-}
-
-/**
- * Handles new socket connections
- *
- * @param {Socket} socket
- */
-function onConnect(socket) {
-  if (socket.data.type !== "player") {
-    return;
-  }
-
-  const isNewPlayer = state.players[socket.data.name] === undefined;
-  const isOngoingGame = state.type !== "lobby";
-
-  if (isNewPlayer) {
-    if (isOngoingGame) {
-      // new players may only join in the lobby
-      socket.disconnect();
+  socket.on("disconnect", () => {
+    if (!room) {
       return;
-    } else {
-      state.players[socket.data.name] = 0;
     }
-  }
+    room.clients.delete(socket.data.name);
 
-  // make sure the new client gets the current state
-  sync();
-}
+    // delete room if no clients are left
+    if (room.clients.size === 0) {
+      console.log("Deleting room");
+      if (socket.data.code) {
+        rooms.delete(socket.data.code);
+      }
+      console.log(rooms.size);
+      return;
+    }
 
-/**
- * Broadcasts the current state to all connected
- * clients playing or spectating.
- */
-function sync() {
-  io.emit("state", state);
-}
+    // switch host if the current host disconnected
+    if (room.host.name === socket.data.name) {
+      console.log("switching host");
+      const newHost = Array.from(room.clients.entries())[0];
+      room.host = {
+        name: newHost[0],
+        socket: newHost[1],
+      };
+    }
+
+    room.host.socket.emit("host-switch");
+    room.host.socket.emit("leave", socket.data.name);
+  });
+
+  socket.on("state", (value) => {
+    // broadcast state to all clients
+    room.clients.forEach((client) => {
+      client.emit("state", value);
+    });
+  });
+
+  socket.on("submit", (value) => {
+    // redirect submit to host
+    room.host.socket.emit("submit", socket.data.name, value);
+  });
+});
 
 server.listen(3000, () => {
-  console.log("server listening on port 3000");
+  console.log("listening on *:3000");
 });
-
-/**
- * Returns a random integer between min (inclusive) and max (inclusive).
- * The value is no lower than min (or the next integer greater than min
- * if min isn't an integer) and no greater than max (or the next integer
- * lower than max if max isn't an integer).
- * Using Math.round() will give you a non-uniform distribution!
- *
- * @param {number} min
- * @param {number} max
- */
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-/**
- * Assigns questions to players at random, making
- * sure each player does not get their own question
- *
- * @param {Record<string,string>} questions
- * @returns
- */
-function generateQuestionMappings(questions) {
-  const authors = Object.keys(questions);
-  const victims = Object.keys(questions);
-
-  /** @type {Record<string,string>} */
-  const mappings = {};
-
-  // pick random author
-  while (authors.length > 0) {
-    let i = getRandomInt(0, authors.length - 1);
-    let j = getRandomInt(0, victims.length - 1);
-
-    // never assign the question to self
-    if (authors[i] === victims[j]) {
-      continue;
-    }
-
-    mappings[authors[i]] = victims[j];
-    authors.splice(i, 1);
-    victims.splice(j, 1);
-  }
-
-  return mappings;
-}

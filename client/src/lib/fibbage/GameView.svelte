@@ -6,15 +6,15 @@
   import FibbageRevealView from "./FibbageRevealView.svelte";
   import LobbyView from "./LobbyView.svelte";
 
-  /** @type {import('socket.io-client').Socket} */
+  /** @type {import("socket.io-client").Socket} */
   export let socket;
 
-  /** @type {import('shared/fibbage').FibbageState} */
+  /** @type {import('shared/state').FibbageState} */
   export let state;
 </script>
 
 {#if state.type === "lobby"}
-  <LobbyView {socket} {state} />
+  <LobbyView {socket} {state} on:leave />
 {:else if state.type === "ask"}
   <AskView {socket} {state} />
 {:else if state.type === "answer"}

@@ -6,9 +6,16 @@ export type FibbageState =
   | FibbageVotePhase
   | FibbageRevealPhase;
 
+export type Player = {
+  state: "active" | "inactive";
+};
+
 export type LobbyPhase = {
   type: "lobby";
-  players: Record<string, number>;
+  code: string;
+  host: string;
+  players: Record<string, Player>;
+  scores: Record<string, number>;
 
   /** Contains the ready status the player selected */
   submissions: Record<string, string>;
@@ -16,7 +23,10 @@ export type LobbyPhase = {
 
 export type AskPhase = {
   type: "ask";
-  players: Record<string, number>;
+  code: string;
+  host: string;
+  players: Record<string, Player>;
+  scores: Record<string, number>;
 
   /** Contains the text of the question the player submitted */
   submissions: Record<string, string>;
@@ -24,7 +34,11 @@ export type AskPhase = {
 
 export type AnswerPhase = {
   type: "answer";
-  players: Record<string, number>;
+  code: string;
+  host: string;
+
+  players: Record<string, Player>;
+  scores: Record<string, number>;
   questions: Record<string, string>;
   mappings: Record<string, string>;
 
@@ -34,9 +48,12 @@ export type AnswerPhase = {
 
 export type FibbageLiePhase = {
   type: "fibbage.lie";
+  code: string;
+  host: string;
   round: number;
 
-  players: Record<string, number>;
+  players: Record<string, Player>;
+  scores: Record<string, number>;
   questions: Record<string, string>;
   mappings: Record<string, string>;
   answers: Record<string, string>;
@@ -47,9 +64,12 @@ export type FibbageLiePhase = {
 
 export type FibbageVotePhase = {
   type: "fibbage.vote";
+  code: string;
+  host: string;
   round: number;
 
-  players: Record<string, number>;
+  players: Record<string, Player>;
+  scores: Record<string, number>;
   questions: Record<string, string>;
   mappings: Record<string, string>;
   answers: Record<string, string>;
@@ -61,9 +81,12 @@ export type FibbageVotePhase = {
 
 export type FibbageRevealPhase = {
   type: "fibbage.reveal";
+  code: string;
+  host: string;
   round: number;
 
-  players: Record<string, number>;
+  players: Record<string, Player>;
+  scores: Record<string, number>;
   questions: Record<string, string>;
   mappings: Record<string, string>;
   answers: Record<string, string>;

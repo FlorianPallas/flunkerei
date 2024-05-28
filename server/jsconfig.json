@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "checkJs": true,
+    "strict": true
+  },
+  "include": ["src/**/*.d.ts", "src/**/*.js"]
+}

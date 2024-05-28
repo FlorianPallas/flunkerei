@@ -5,10 +5,10 @@
   import WasAsked from "../common/WasAsked.svelte";
   import { shuffleArray } from "../util";
 
-  /** @type {import('socket.io-client').Socket} */
+  /** @type {import("socket.io-client").Socket} */
   export let socket;
 
-  /** @type {import('shared/fibbage').FibbageVotePhase} */
+  /** @type {import('../state').FibbageVotePhase} */
   export let state;
 
   $: author = Object.keys(state.players)[state.round];

@@ -1,12 +1,12 @@
 <script>
+  import { getRandomElement } from "shared";
   import { content } from "../../stores";
   import TextPrompt from "../prompts/TextPrompt.svelte";
-  import { getRandomElement } from "../util";
 
-  /** @type {import('socket.io-client').Socket} */
+  /** @type {import("socket.io-client").Socket} */
   export let socket;
 
-  /** @type {import('shared/fibbage').AskPhase} */
+  /** @type {import('shared/state').AskPhase} */
   export let state;
 
   $: submission = state.submissions[socket.auth.name];

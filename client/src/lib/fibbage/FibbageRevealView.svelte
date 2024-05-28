@@ -1,16 +1,15 @@
 <script>
   import ReadyPrompt from "../prompts/ReadyPrompt.svelte";
   import Player from "../common/Player.svelte";
-  import Question from "../common/Question.svelte";
   import { onMount } from "svelte";
   import { flip } from "svelte/animate";
   import WasAsked from "../common/WasAsked.svelte";
-  import { fade, fly, scale } from "svelte/transition";
+  import { fade } from "svelte/transition";
 
-  /** @type {import('socket.io-client').Socket} */
+  /** @type {import("socket.io-client").Socket} */
   export let socket;
 
-  /** @type {import('shared/fibbage').FibbageRevealPhase} */
+  /** @type {import('../state').FibbageRevealPhase} */
   export let state;
 
   /**

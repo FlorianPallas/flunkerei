@@ -3,10 +3,10 @@
   import Notice from "../common/Notice.svelte";
   import WasAsked from "../common/WasAsked.svelte";
 
-  /** @type {import('socket.io-client').Socket} */
+  /** @type {import("socket.io-client").Socket} */
   export let socket;
 
-  /** @type {import('shared/fibbage').FibbageLiePhase} */
+  /** @type {import('../state').FibbageLiePhase} */
   export let state;
 
   $: author = Object.keys(state.players)[state.round];

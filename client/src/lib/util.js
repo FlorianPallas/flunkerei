@@ -1,3 +1,5 @@
+import { getRandomInt } from "shared";
+
 /**
  * Constructs a keyboard event handler that calls the specified callback when the Enter key is pressed.
  *
@@ -28,27 +30,6 @@ export function shuffleArray(array) {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
-}
-
-/**
- * Returns a random integer between the specified values, inclusive.
- * @param {number} min
- * @param {number} max
- * @returns {number}
- */
-export function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-/**
- * Returns a random element from the given array.
- *
- * @template T the type of elements in the array
- * @param {T[]} array an array of elements
- * @returns {T} a random element from the array
- */
-export function getRandomElement(array) {
-  return array[getRandomInt(0, array.length - 1)];
 }
 
 export const appVersion = __APP_VERSION__;

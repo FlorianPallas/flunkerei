@@ -4,7 +4,7 @@
   import SimpleTextPrompt from "./lib/prompts/SimpleTextPrompt.svelte";
   import Logo from "./lib/common/Logo.svelte";
   import { io } from "socket.io-client";
-  import { getRandomInt } from "shared";
+  import { generateQuestionMappings } from "./lib/util";
 
   onMount(() => {
     const code = new URLSearchParams(window.location.search).get("code");
@@ -314,38 +314,6 @@
       }
 
       sync();
-    }
-
-    /**
-     * Assigns questions to players at random, making
-     * sure each player does not get their own question
-     *
-     * @param {Record<string,string>} questions
-     * @returns
-     */
-    function generateQuestionMappings(questions) {
-      const authors = Object.keys(questions);
-      const victims = Object.keys(questions);
-
-      /** @type {Record<string,string>} */
-      const mappings = {};
-
-      // pick random author
-      while (authors.length > 0) {
-        let i = getRandomInt(0, authors.length - 1);
-        let j = getRandomInt(0, victims.length - 1);
-
-        // never assign the question to self
-        if (authors[i] === victims[j]) {
-          continue;
-        }
-
-        mappings[authors[i]] = victims[j];
-        authors.splice(i, 1);
-        victims.splice(j, 1);
-      }
-
-      return mappings;
     }
   }
 

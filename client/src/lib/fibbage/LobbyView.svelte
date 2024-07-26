@@ -6,6 +6,7 @@
   import Player from "../common/Player.svelte";
   import ReadyPrompt from "../prompts/ReadyPrompt.svelte";
   import { createEventDispatcher } from "svelte";
+  import { i18n } from "../../i18n";
   const dispatch = createEventDispatcher();
 
   /** @type {import("socket.io-client").Socket} */
@@ -15,11 +16,7 @@
   export let state;
 
   function onLeave() {
-    if (
-      !confirm(
-        "Möchtest du den Raum wirklich verlassen? Sobald das Spiel gestartet wurde, kannst du nicht wieder beitreten."
-      )
-    ) {
+    if (!confirm($i18n.lobby.leaveRoom.confirmation)) {
       return;
     }
     dispatch("leave");
@@ -51,7 +48,9 @@
       {state}
       on:submit={(e) => socket.emit("submit", e.detail)}
     />
-    <button on:click={() => onLeave()}>Raum verlassen</button>
+    <button on:click={() => onLeave()}>
+      {$i18n.lobby.leaveRoom.label}
+    </button>
   </div>
 </footer>
 

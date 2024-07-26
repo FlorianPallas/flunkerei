@@ -5,6 +5,7 @@
   import Logo from "./lib/common/Logo.svelte";
   import { io } from "socket.io-client";
   import { generateQuestionMappings } from "./lib/util";
+  import { i18n } from "./i18n";
 
   onMount(() => {
     const code = new URLSearchParams(window.location.search).get("code");
@@ -340,23 +341,25 @@
   </header>
   <main>
     <SimpleTextPrompt
-      label="Gib deinen Namen ein"
+      label={$i18n.namePrompt}
       bind:value={hostNameValue}
       on:submit={() => join(hostNameValue)}
     />
-    <button on:click={() => join(hostNameValue)}>Raum erstellen</button>
-    <p>- oder -</p>
+    <button on:click={() => join(hostNameValue)}>{$i18n.createRoom}</button>
+    <p>- {$i18n.or} -</p>
     <SimpleTextPrompt
-      label="Gib einen Raumcode ein"
+      label={$i18n.codePrompt}
       bind:value={codeValue}
       on:submit={() => join(nameValue, codeValue)}
     />
     <SimpleTextPrompt
-      label="Gib deinen Namen ein"
+      label={$i18n.namePrompt}
       bind:value={nameValue}
       on:submit={() => join(nameValue, codeValue)}
     />
-    <button on:click={() => join(nameValue, codeValue)}>Raum beitreten</button>
+    <button on:click={() => join(nameValue, codeValue)}>
+      {$i18n.joinRoom}
+    </button>
   </main>
 {/if}
 

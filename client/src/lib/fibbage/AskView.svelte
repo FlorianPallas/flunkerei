@@ -2,6 +2,7 @@
   import { getRandomElement } from "shared";
   import { content } from "../../stores";
   import TextPrompt from "../prompts/TextPrompt.svelte";
+  import { i18n } from "../../i18n";
 
   /** @type {import("socket.io-client").Socket} */
   export let socket;
@@ -14,11 +15,7 @@
   let usedQuestionPool = false;
 
   function onPickForMe() {
-    if (
-      !confirm(
-        "Möchtest du wirklich eine vorgeschriebene Frage benutzen, anstatt eine eigene zu schreiben? Das ist ein bisschen langweilig, findest du nicht?"
-      )
-    ) {
+    if (!confirm($i18n.ask.pickForMe.confirmation)) {
       return;
     }
     usedQuestionPool = true;
@@ -35,13 +32,13 @@
 
 <main>
   <TextPrompt
-    label="Denke dir eine Frage für die anderen Spieler aus"
+    label={$i18n.ask.prompt}
     value={submission}
     on:submit={onSubmit}
   />
 </main>
 <footer>
-  <button disabled={usedQuestionPool} on:click={() => onPickForMe()}
-    >Mir fällt nichts ein</button
-  >
+  <button disabled={usedQuestionPool} on:click={() => onPickForMe()}>
+    {$i18n.ask.pickForMe.label}
+  </button>
 </footer>

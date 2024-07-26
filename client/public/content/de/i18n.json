@@ -1,1 +1,24 @@
-{}
+{
+  "namePrompt": "Gib deinen Namen ein",
+  "codePrompt": "Gib einen Raumcode ein",
+  "createRoom": "Raum erstellen",
+  "joinRoom": "Raum beitreten",
+  "or": "oder",
+  "ready": {
+    "yes": "Bereit",
+    "no": "Nicht bereit"
+  },
+  "lobby": {
+    "leaveRoom": {
+      "label": "Raum verlassen",
+      "confirmation": "Möchtest du wirklich den Raum verlassen? Sobald das Spiel gestartet wurde, kannst du nicht wieder beitreten."
+    }
+  },
+  "ask": {
+    "prompt": "Denke dir eine Frage für die anderen Spieler aus",
+    "pickForMe": {
+      "label": "Mir fällt nichts ein",
+      "confirmation": "Möchtest du wirklich eine vorgeschriebene Frage benutzen, anstatt eine eigene zu schreiben? Das ist ein bisschen langweilig, findest du nicht?"
+    }
+  }
+}

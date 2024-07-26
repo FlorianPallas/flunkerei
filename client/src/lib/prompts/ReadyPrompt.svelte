@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import { i18n } from "../../i18n";
   const dispatch = createEventDispatcher();
 
   /** @type {string} */
@@ -17,9 +18,9 @@
 >
   <button type="submit">
     {#if value === "ready"}
-      Nicht Bereit
+      {$i18n.ready.yes}
     {:else}
-      Bereit
+      {$i18n.ready.no}
     {/if}
     ({Object.values(state.submissions).filter((value) => value === "ready")
       .length}/{Object.keys(state.players).length})

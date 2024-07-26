@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "playwright test"
+    "test": "vitest",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.45.3",

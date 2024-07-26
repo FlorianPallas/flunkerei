@@ -5,7 +5,7 @@
   /** @type {import("socket.io-client").Socket} */
   export let socket;
 
-  /** @type {import('../state').AnswerPhase} */
+  /** @type {import('shared/state').AnswerPhase} */
   export let state;
 
   $: question = state.questions[state.mappings[socket.auth.name]];

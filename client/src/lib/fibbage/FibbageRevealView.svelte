@@ -9,7 +9,7 @@
   /** @type {import("socket.io-client").Socket} */
   export let socket;
 
-  /** @type {import('../state').FibbageRevealPhase} */
+  /** @type {import('shared/state').FibbageRevealPhase} */
   export let state;
 
   /**

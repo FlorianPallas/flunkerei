@@ -2,6 +2,8 @@
 
 > A game all about lying - heavily inspired by the Jackbox Party Pack game "Fibbage: Enough About You"
 
+[![ci](https://github.com/FlorianPallas/flunkerei/actions/workflows/ci.yml/badge.svg)](https://github.com/FlorianPallas/flunkerei/actions/workflows/ci.yml)
+
 Uncover truths and fabrications as players reveal personal anecdotes and craft convincing lies. With new rounds adding twists and turns, it's not just about what you know, but who you can fool!
 
 ![Flunkerei Hero Image](assets/hero.jpg)

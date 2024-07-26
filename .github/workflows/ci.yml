@@ -23,7 +23,7 @@ jobs:
         working-directory: ./client
 
   e2e-tests:
-    timeout-minutes: 10
+    timeout-minutes: 60
     runs-on: ubuntu-latest
 
     steps:
@@ -36,8 +36,17 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
         working-directory: ./client
+      - run: echo "PLAYWRIGHT_VERSION=$(pnpm list | grep playwright | awk '{print $NF}')" >> $GITHUB_ENV
+        working-directory: ./client
+      - uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - run: pnpm playwright install --with-deps
         working-directory: ./client
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
       - run: pnpm test:e2e
         working-directory: ./client
       - uses: actions/upload-artifact@v4

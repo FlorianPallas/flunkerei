@@ -4,7 +4,7 @@
   /** @type {string} */
   export let code;
 
-  $: url = import.meta.env.VITE_BASE_URL + "/?code=" + code;
+  $: url = window.APP_BASE_URL + "/?code=" + code;
 
   function speakRoomCode() {
     if (speechSynthesis.speaking) {

@@ -31,7 +31,7 @@ export const FALLBACK = {
  * @type {import("svelte/store").Readable<FALLBACK>}
  */
 export const i18n = readable(FALLBACK, function start(set) {
-  fetch(`content/${import.meta.env.VITE_LOCALE}/i18n.json`)
+  fetch(`content/${window.APP_LOCALE}/i18n.json`)
     .then((response) => response.json())
     .then((data) => set(data));
 });

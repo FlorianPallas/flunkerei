@@ -6,7 +6,6 @@ ADD package.json .
 ADD pnpm-lock.yaml .
 ADD pnpm-workspace.yaml .
 ADD client/package.json ./client/
-ADD client/pnpm-lock.yaml ./client/
 
 RUN pnpm install --frozen-lockfile
 

@@ -4,6 +4,9 @@ WORKDIR /app
 
 ADD package.json .
 ADD pnpm-lock.yaml .
+ADD pnpm-workspace.yaml .
+ADD server/package.json ./server/
+ADD server/pnpm-lock.yaml ./server/
 
 RUN pnpm install --frozen-lockfile
 

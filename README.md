@@ -10,11 +10,11 @@ Uncover truths and fabrications as players reveal personal anecdotes and craft c
 
 ## Getting Started
 
-Install the [Node.js v20](https://nodejs.org/en/) runtime and the [pnpm](https://pnpm.io/) package manager.
+Install the [Node.js v22](https://nodejs.org/en/) runtime and the [pnpm](https://pnpm.io/) package manager.
 
 ```
 # Arch Linux
-pacman -S nodejs-lts-iron
+pacman -S nodejs-lts-jod
 ```
 
 ```

@@ -33,7 +33,7 @@
    */
 
   /** @type {Socket} */
-  const socket = io(window.APP_API_BASE_URL, { autoConnect: false });
+  const socket = io(window.APP_API_BASE_URL, { autoConnect: false, transports: ["websocket"] });
 
   /** @type {import('shared/state').FibbageState | undefined} */
   let clientState;

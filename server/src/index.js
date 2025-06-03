@@ -1,8 +1,10 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { getRandomInt } from "shared";
+import express from "express";
 
-const server = createServer();
+const app = express();
+const server = createServer(app);
 
 /**
  * @typedef {import('socket.io').Socket<import("shared/socket").IncomingEvents, import("shared/socket").OutgoingEvents, import("shared/socket").InterServerEvents, import("shared/socket").SocketData>} Socket
@@ -22,6 +24,10 @@ const rooms = new Map();
 
 const CODE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const CODE_LENGTH = 4;
+
+app.get("/health", (_req, res) => {
+  res.status(200).send("OK");
+});
 
 io.use((socket, next) => {
   const auth = socket.handshake.auth;

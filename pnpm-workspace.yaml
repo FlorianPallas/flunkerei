@@ -2,3 +2,7 @@ packages:
   - client
   - server
   - shared
+onlyBuiltDependencies:
+  - '@fortawesome/fontawesome-common-types'
+  - '@fortawesome/free-solid-svg-icons'
+  - esbuild

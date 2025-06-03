@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "pw:setup": "playwright install --with-deps"
   },
   "devDependencies": {
     "@playwright/test": "^1.45.3",

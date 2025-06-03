@@ -15,8 +15,8 @@
 
   /** @type {string} */
   export let value = "";
-  $: tempValue = value;
 
+  let tempValue = value;
   let isLoading = false;
   $: isValid = tempValue.trim().length >= 1 && tempValue.trim().length <= 60;
   $: hasChanged = tempValue !== value;
